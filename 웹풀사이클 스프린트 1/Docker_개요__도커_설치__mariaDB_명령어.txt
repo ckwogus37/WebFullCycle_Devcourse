@@ -1,0 +1,11 @@
+
+1) Docker로부터 MariaDB Image 가져오기 : docker pull mariadb
+
+2) MariaDB 컨테이너 생성 및 실행 (password는 "root"로 설정)
+: docker run --name mariadb -d -p 3306:3306 --restart=always -e MYSQL_ROOT_PASSWORD=root mariadb
+
+3) mariadb가 있는 컨테이너 접속 : docker exec  -it mariadb /bin/bash
+
+4) mariadb 실행 : mariadb -u root -p
+
+5) password는 " root " 입력

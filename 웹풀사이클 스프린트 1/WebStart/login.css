@@ -1,0 +1,13 @@
+h1 { /* 태그이름 기준 */
+    color: darkred; 
+    text-align: center;
+}
+.login_inputs { /* class 속성값 기준 */
+    font-size: 50px;
+    background-color: rgb(227, 242, 222);
+}
+#login_btn { /* id 속성값 기준 */
+    font-size: 20px;
+    width:100px;
+    height:40px
+}

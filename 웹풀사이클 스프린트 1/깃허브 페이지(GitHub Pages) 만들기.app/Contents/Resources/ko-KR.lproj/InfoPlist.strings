@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDisplayName</key>
+	<string>깃허브 페이지(GitHub Pages) 만들기</string>
+	<key>CFBundleName</key>
+	<string>깃허브 페이지(GitHub Pages) 만들기</string>
+</dict>
+</plist>
