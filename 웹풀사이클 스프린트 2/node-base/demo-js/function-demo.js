@@ -11,7 +11,7 @@ let add3 = (x,y) => {
     return x+y
 }
 
-// return 만 있다면 중괄호 생략 가능
+// 화살표 함수의 내용이 "return만" 있다면 중괄호 생략 가능
 const add4 = (x,y) => x+y
 
 console.log(add1(1,2))
