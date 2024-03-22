@@ -1,12 +1,8 @@
 const express = require('express');
 const app = express();
-app.listen(3000);
 
-// 여기서 API를 생각해보도록 하자
-// method : "GET" , 요청사항 " / "
-app.get('/',function(req, res){
-    res.send('Hello express.js')
-})
+// 서버 셋팅 : 포트 번호 3000으로 셋팅
+app.listen(3000);
 
 // 책의 정보를 담은 객체를 선언
 let nodejsBook = {
