@@ -1,35 +1,62 @@
 // express 모듈 셋팅
 const express = require('express')
-const { isNull } = require('util')
 const app = express()
 app.listen(7777)
 app.use(express.json()) // => req.body를 JSON 형식으로 읽을 수 있게 해주는 모듈
 
 let db = new Map()
-let accountNum = 1
+let accountNum = 1 // 하나의 객체를 유니크하게 구별하기 위함
 
+let loginUser = {} 
+// userInfo 선언 시, {} 로 초기화를 했는데 이것은 Null값이기에 undefined가 아님을 항상 주의해야 한다.
+// id 값을 못 찾았을 경우의 if문에서는 Null값이라도 truthy 의미를 지니기에 if문이 바로 실행되기 때문
+// checkDB 함수에서 사용하기 위해 로그인 app.post 내부의 변수를 전역변수로 수정
 
 // 로그인
 app.post('/login', (req,res)=>{
-    const {id, pwd} = req.body
+    const {id, password} = req.body
+    
+    checkDB(db,id)
+    console.log(loginUser)
+   
+    if(isExist(loginUser)){ 
+        console.log("아이디 같은거 찾았다!")
 
-    if(id && pwd){
-        res.status(201).json({
-            "id" : `입력받은 id값 : ${id}`,
-            "pwd" : `입력받은 pwd값 : ${pwd}`
-        })
+        // password도 맞는지 비교
+        if(loginUser.password === password){
+            console.log("패스워드도 같다!")
+        }else{
+            console.log("패스워드가 다르다!")
+        }
     }else{
-        res.status(400).json({
-            Message : "아이디 또는 비밀번호를 정확히 입력해주세요"
-        })
+        console.log("입력하신 아이디는 없는 아이디 입니다.")
     }
 })
 
+// 입력받은 id와 pwd가 DB에 저장된 회원인지 확인해야 한다
+function checkDB(db, id){
+    db.forEach((user)=>{
+        if(user.id === id){
+            loginUser = user
+        }
+    })
+}
+
+
+// 객체 안에 데이터가 있는지 확인해주는 함수
+function isExist(obj){
+    if(Object.keys(obj).length){
+        return true
+    }else{
+        return false
+    }
+}
+
 // 회원가입
 app.post('/join', (req,res)=>{
-    const {id, pwd, name} = req.body
-    if(id && pwd && name){
-        console.log(req.body)
+    const {id, password, name} = req.body
+    if(id && password && name){
+        //console.log(req.body)
         db.set(accountNum++, req.body)
         res.status(201).json({
             message : `${db.get(accountNum-1).name}님 환영합니다.`
@@ -43,7 +70,7 @@ app.post('/join', (req,res)=>{
 
 // route()를 활용한 REST API 구조 변경
 app.route('/users/:accountNum')
-    .get((req,res)=>{
+    .get((req,res)=>{   // 회원 개별 조회
         let {accountNum} = req.params  
         accountNum = parseInt(accountNum)
         const user = db.get(accountNum)
@@ -59,7 +86,7 @@ app.route('/users/:accountNum')
             })
         }
     })
-    .delete((req,res)=>{
+    .delete((req,res)=>{    // 회원 개별 탈퇴
         let {accountNum} = req.params  
         accountNum = parseInt(accountNum)
         const user = db.get(accountNum)
