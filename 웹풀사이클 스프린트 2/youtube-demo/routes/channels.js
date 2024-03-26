@@ -1,31 +1,42 @@
 // express 모듈 셋팅
 const express = require('express')
-const app = express()
-app.listen(7777)
-app.use(express.json()) // => req.body를 JSON 형식으로 읽을 수 있게 해주는 모듈
+const router = express.Router();
+
+router.use(express.json())
+// expres.json() : req.body를 JSON 형식으로 읽을 수 있게 해주는 모듈
 
 let db = new Map()
 let channelNum = 1 // 하나의 객체를 유니크하게 구별하기 위함
 
-app
-    .route('/channels')
+router
+    .route('/')
     .get((req,res)=>{   // 채널 전체 조회
-        if(db.size){
-            let channels = []
 
+        // 예외 처리 2가지
+        // 1) id가 BODY에 없는 경우 -> 로그인을 하라고 알림
+        // 2) id가 가진 채널이 없는 경우
+
+        let {id} = req.body
+        let channels = []
+
+        if(db.size && id){ // 1) 예외처리 해결
             db.forEach((value, key)=>{
-                channels.push(value)
+                if(id === value.id)
+                    channels.push(value)
             })
-    
-            res.status(200).json(channels) 
+
+            if(channels.length){ // 2) 예외처리 해결
+                res.status(200).json(channels) 
+            }else{
+                notFoundChannel()
+            }
         }else{
-            res.status(404).json({
-                message : "조회할 채널이 없습니다."
-            })
+            notFoundChannel()
         }
 
     }) 
     .post((req,res)=>{  // 채널 개별 생성 = db에 저장
+
         if(req.body.channelTitle){
             db.set(channelNum++, req.body)
 
@@ -39,8 +50,8 @@ app
         }
     }) 
     
-app    
-    .route('/channels/:channelNum')
+router    
+    .route('/:channelNum')
     .get((req,res)=>{   // 채널 개별 조회
         let {channelNum} = req.params
         channelNum = parseInt(channelNum)
@@ -49,9 +60,7 @@ app
         if(channel){
             res.status(200).json(channel)
         }else{
-            res.status(404).json({
-                message : "채널 정보를 찾을 수 없습니다."
-            })
+            notFoundChannel()
         }
     }) 
     .put((req,res)=>{   // 채널 개별 수정
@@ -68,12 +77,10 @@ app
             db.set(channelNum,channel)
 
             res.status(200).json({
-                message : `채널명이 정상적으로 수정되었습니다. 기존 "${oldTitle}" -> 수정 "${newTitle}"`
+                message : `채널명이 정상적으로 수정되었습니다. 기존 : ${oldTitle}" -> 수정 : ${newTitle}`
             })
         }else{
-            res.status(404).json({
-                message : "채널 정보를 찾을 수 없습니다."
-            })
+            notFoundChannel()
         }
     }) 
     .delete((req,res)=>{    // 채널 개별 삭제
@@ -87,8 +94,14 @@ app
                 message : `${channel.channelTitle} 채널이 정상적으로 삭제되었습니다.`
             })
         }else{
-            res.status(404).json({
-                message : "채널 정보를 찾을 수 없습니다."
-            })
+            notFoundChannel()
         }
     }) 
+
+function notFoundChannel(){
+    res.status(404).json({
+        message : "채널 정보를 찾을 수 없습니다."
+    })
+}
+
+module.exports = router
